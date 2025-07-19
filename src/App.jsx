@@ -21,11 +21,26 @@ function App() {
     setNewTask(e.target.value);
   }
 
+  const getDate = ()=>{
+    const date = new Date();
+    return date.toLocaleDateString("pt-Br",  {
+      weekday: "short",
+      year: 'numeric',    // 2025
+      month: '2-digit',      // julho
+      day: '2-digit',     // 19
+      hour: '2-digit',    // 21
+      minute: '2-digit',  // 48
+      second: '2-digit',  // 10
+      hour12: false       // 24h (false) ou 12h (true)
+    })
+  }
+
   const saveTask = (e) => {
     e.preventDefault();
     if(!newTask) return;
     setTasks(prev => {
-      const allTasks = [...prev, { isChecked: false, task: newTask }];
+
+      const allTasks = [...prev, { isChecked: false, task: newTask, date: getDate()}];
       updateLocalStorageTasks(allTasks);
       return allTasks;
     });
@@ -33,7 +48,7 @@ function App() {
   }
 
   const clearTasks = () => {
-    const confirmClear = window.confirm("Deseja limpar todas as tasks?")
+    const confirmClear = window.confirm("Deseja limpar todas as ocorrências?")
     console.log(confirmClear)
     if(confirmClear){
       setTasks([]);
@@ -44,7 +59,7 @@ function App() {
   const changeTaskCheck = (index) => {
     setTasks(prev => {
       const copy = [...prev];
-      copy[index] = { isChecked: !copy[index].isChecked, task: prev[index].task };
+      copy[index] = {...copy[index], isChecked: !copy[index].isChecked};
       updateLocalStorageTasks(copy);
       return copy;
     })
@@ -62,7 +77,8 @@ function App() {
 
   return (
     <form className="main" onSubmit={saveTask}>
-      <input type="text" placeholder="Nova task" value={newTask} onChange={handleInput} className="new-todo-input" />
+      <h1>Ocorrências de plantão</h1>
+      <input type="text" placeholder="Adicionar ocorrência" value={newTask} onChange={handleInput} className="new-todo-input" />
 
       {tasks.map((task, index) => (
         <div className="container-task" key={index}>
@@ -73,14 +89,16 @@ function App() {
           <div className="icon-container">
             <FaRegTrashAlt className="icon" onClick={() => deleteTask(index)} />
           </div>
+
+          <p className="date">{task.date}</p>
         </div>
       ))}
 
       {tasks.length===0 && 
-        <p className="empty-message">Você ainda não tem tasks. Que tal criar uma? 😊</p>
+        <p className="empty-message">Sem ocorrências 😊</p>
       }
 
-      <button type="button" className="clear-button" onClick={clearTasks}>Limpar tasks</button>
+      <button type="button" className="clear-button" onClick={clearTasks}>Limpar ocorrências</button>
     </form>
   );
 }
