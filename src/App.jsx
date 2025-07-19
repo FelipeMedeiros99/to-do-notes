@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { FiEdit } from "react-icons/fi";
+import { TbAspectRatio } from "react-icons/tb";
 
 function App() {
   const [tasks, setTasks] = useState(() => {
@@ -11,14 +13,15 @@ function App() {
       return JSON.parse(localTasks)
     }
   })
-  const [newTask, setNewTask] = useState("");
+  const [task, setTask] = useState({value: "", isEditing: false, index: null});
+  // const [isEditing, setIsEditing] = useState({isEditing: false, index: null})
 
   const updateLocalStorageTasks = (newValue) => {
     localStorage.setItem("tasks", JSON.stringify(newValue));
   }
 
   const handleInput = (e) => {
-    setNewTask(e.target.value);
+    setTask(prev => ({...prev, value: e.target.value}));
   }
 
   const getDate = ()=>{
@@ -37,22 +40,31 @@ function App() {
 
   const saveTask = (e) => {
     e.preventDefault();
-    if(!newTask) return;
+    if(!task.value.trim()) return;
     setTasks(prev => {
-
-      const allTasks = [...prev, { isChecked: false, task: newTask, date: getDate()}];
-      updateLocalStorageTasks(allTasks);
-      return allTasks;
+      if(!task.isEditing){
+        const allTasks = [...prev, { isChecked: false, task: task.value, date: getDate()}];
+        updateLocalStorageTasks(allTasks);
+        return allTasks;
+      }else{
+        const allTasks = [...prev]
+        allTasks[task.index] = {...allTasks[task.index], task: task.value}
+        // { isChecked: false, task: task, date: getDate()}];
+        updateLocalStorageTasks(allTasks);
+        return allTasks;
+      }
     });
-    setNewTask("");
+    setTask({value: "", isEditing: false, index: null});
   }
 
   const clearTasks = () => {
-    const confirmClear = window.confirm("Deseja limpar todas as ocorrências?")
-    console.log(confirmClear)
-    if(confirmClear){
-      setTasks([]);
-      updateLocalStorageTasks([]);
+    const wantClear = window.confirm("Deseja apagar as ocorrências concluídas?")
+    if(wantClear){
+      setTasks(prev=>{
+        const copy = prev.filter((task)=>!task.isChecked)
+        updateLocalStorageTasks(copy);
+        return copy
+      })
     }
   }
 
@@ -74,12 +86,18 @@ function App() {
     })
   }
 
+  const editTask = (task, index) => {
+    setTask({value: task.task, isEditing: true, index: index})
+  }
+
 
   return (
     <form className="main" onSubmit={saveTask}>
       <h1>Ocorrências de plantão</h1>
-      <input type="text" placeholder="Adicionar ocorrência" value={newTask} onChange={handleInput} className="new-todo-input" />
-
+      <div className="container-new-todo">
+        <textarea type="submit" placeholder="Adicionar ocorrência" value={task.value} onChange={handleInput} className="new-todo-input" />
+        <button type="submit" className="save-button">Salvar</button>
+      </div>
       {tasks.map((task, index) => (
         <div className="container-task" key={index}>
           <div className="checkbox-container" onClick={() => changeTaskCheck(index)}>
@@ -87,7 +105,8 @@ function App() {
             <label className={task?.isChecked ? "task-checked" : "task"}>{task?.task}</label>
           </div>
           <div className="icon-container">
-            <FaRegTrashAlt className="icon" onClick={() => deleteTask(index)} />
+            {/* <FaRegTrashAlt className="icon" onClick={() => deleteTask(index)} /> */}
+            <FiEdit className="icon" onClick={()=>editTask(task, index)}/>
           </div>
 
           <p className="date">{task.date}</p>
@@ -98,7 +117,7 @@ function App() {
         <p className="empty-message">Sem ocorrências 😊</p>
       }
 
-      <button type="button" className="clear-button" onClick={clearTasks}>Limpar ocorrências</button>
+      <button type="button" className="clear-button" onClick={clearTasks}>Limpar concluídas</button>
     </form>
   );
 }
