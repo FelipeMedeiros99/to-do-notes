@@ -15,6 +15,7 @@ body, html, #root{
   width: 100%;
   height: 100%;
   overflow-x: hidden;
+  background-color: rgb(239 239 239);
 }
 
 #root{
