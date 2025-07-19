@@ -23,6 +23,7 @@ function App() {
 
   const saveTask = (e) => {
     e.preventDefault();
+    if(!newTask) return;
     setTasks(prev => {
       const allTasks = [...prev, { isChecked: false, task: newTask }];
       updateLocalStorageTasks(allTasks);
@@ -32,8 +33,12 @@ function App() {
   }
 
   const clearTasks = () => {
-    setTasks([]);
-    updateLocalStorageTasks([]);
+    const confirmClear = window.confirm("Deseja limpar todas as tasks?")
+    console.log(confirmClear)
+    if(confirmClear){
+      setTasks([]);
+      updateLocalStorageTasks([]);
+    }
   }
 
   const changeTaskCheck = (index) => {
@@ -60,10 +65,10 @@ function App() {
       <input type="text" placeholder="Nova task" value={newTask} onChange={handleInput} className="new-todo-input" />
 
       {tasks.map((task, index) => (
-        <div className="container-task" key={index} onClick={() => changeTaskCheck(index)}>
-          <div className="checkbox-container">
-            <input type="checkbox" checked={task.isChecked} className="checkbox"/>
-            <label className={task.isChecked ? "task-checked" : "task"}>{task.task}</label>
+        <div className="container-task" key={index}>
+          <div className="checkbox-container" onClick={() => changeTaskCheck(index)}>
+            <input type="checkbox" checked={task?.isChecked} className="checkbox"/>
+            <label className={task?.isChecked ? "task-checked" : "task"}>{task?.task}</label>
           </div>
           <div className="icon-container">
             <FaRegTrashAlt className="icon" onClick={() => deleteTask(index)} />

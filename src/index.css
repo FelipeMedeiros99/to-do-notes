@@ -49,7 +49,8 @@ code {
 .checkbox-container{
   display: flex;
   align-items: center;
-  justify-content: center;
+  width: 100%;
+  padding: 1rem;
 }
 
 .task, .task-checked{
@@ -65,7 +66,6 @@ code {
 .container-task{
   display: flex;
   width: 100%;
-  padding: 1rem;
   background-color: white;
   margin: 0.2rem;
   border-radius: 0.5rem;
@@ -74,13 +74,12 @@ code {
 
 .container-task:hover{
   cursor: pointer;
-  width: calc(100% + 1rem);
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: 0 0 0.1rem black;
 }
 
 .icon-container{
-  padding: 0.5rem;
+  padding: 1rem;
 }
 
 .icon{
