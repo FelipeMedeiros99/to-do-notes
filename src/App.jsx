@@ -76,6 +76,10 @@ function App() {
         </div>
       ))}
 
+      {tasks.length===0 && 
+        <p className="empty-message">Você ainda não tem tasks. Que tal criar uma? 😊</p>
+      }
+
       <button type="button" className="clear-button" onClick={clearTasks}>Limpar tasks</button>
     </form>
   );
