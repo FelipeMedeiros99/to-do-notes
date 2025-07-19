@@ -31,10 +31,10 @@ Uma aplicação web simples e eficiente para gerenciamento de tarefas (to-do lis
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/seu-repo.git
+git clone https://github.com/FelipeMedeiros99/to-do-notes
 
 # Acesse o diretório
-cd seu-repo
+cd to-do-notes
 
 # Instale as dependências
 npm install
