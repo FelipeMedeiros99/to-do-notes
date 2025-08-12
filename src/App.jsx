@@ -1,56 +1,30 @@
-import { useEffect, useState } from "react";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { useState } from "react";
 import { FiEdit } from "react-icons/fi";
-import { TbAspectRatio } from "react-icons/tb";
+import { orderTasksByTimestamp, getDate } from "./tools/dataFunctions";
+import { getLocalStorageData, updateLocalStorageTasks } from "./tools/localStorageFunctions";
 
 function App() {
-  const [tasks, setTasks] = useState(() => {
-    const localTasks = localStorage.getItem("tasks")
-    if (!localTasks) {
-      localStorage.setItem("tasks", "[]")
-      return [];
-    } else {
-      return JSON.parse(localTasks)
-    }
-  })
+  const [tasks, setTasks] = useState(getLocalStorageData())
   const [task, setTask] = useState({value: "", isEditing: false, index: null});
-  // const [isEditing, setIsEditing] = useState({isEditing: false, index: null})
-
-  const updateLocalStorageTasks = (newValue) => {
-    localStorage.setItem("tasks", JSON.stringify(newValue));
-  }
 
   const handleInput = (e) => {
     setTask(prev => ({...prev, value: e.target.value}));
   }
 
-  const getDate = ()=>{
-    const date = new Date();
-    return date.toLocaleDateString("pt-Br",  {
-      weekday: "short",
-      year: 'numeric',    // 2025
-      month: '2-digit',      // julho
-      day: '2-digit',     // 19
-      hour: '2-digit',    // 21
-      minute: '2-digit',  // 48
-      second: '2-digit',  // 10
-      hour12: false       // 24h (false) ou 12h (true)
-    })
-  }
-
   const saveTask = (e) => {
     e.preventDefault();
-    if(!task.value.trim()) return;
+    const {value} = task;
+    if(!value.trim()) return;
     setTasks(prev => {
       if(!task.isEditing){
-        const allTasks = [...prev, { isChecked: false, task: task.value, date: getDate()}];
+        const allTasks = orderTasksByTimestamp([...prev, { isChecked: false, task: task.value, date: getDate(), timestamp: Date.now()}]);
         updateLocalStorageTasks(allTasks);
         return allTasks;
       }else{
         const allTasks = [...prev]
         allTasks[task.index] = {...allTasks[task.index], task: task.value}
         // { isChecked: false, task: task, date: getDate()}];
-        updateLocalStorageTasks(allTasks);
+        updateLocalStorageTasks(orderTasksByTimestamp(allTasks));
         return allTasks;
       }
     });
